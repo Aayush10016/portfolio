@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 
@@ -82,7 +83,8 @@ const portfolioLinks = {
   email: "aayushtiwari1001@gmail.com",
   github: "https://github.com/Aayush10016",
   linkedin: "https://www.linkedin.com/in/aayush-tiwari-048558347/",
-  hiphophub: "https://hip-hop-hub.vercel.app/"
+  hiphophub: "https://hip-hop-hub.vercel.app/",
+  resume: "/aayush-tiwari-resume.pdf"
 };
 
 const trophyStorageKey = "extra-time-trophies";
@@ -2241,6 +2243,12 @@ function ModalLayer({
                       View code
                     </a>
                   </article>
+                  <article>
+                    <span>Official Player Dossier</span>
+                    <a href={portfolioLinks.resume} target="_blank" rel="noreferrer">
+                      Open resume PDF
+                    </a>
+                  </article>
                   <article className="wide">
                     <span>Education</span>
                     <p>{profileSummary.education}</p>
@@ -2438,6 +2446,14 @@ function FullTime({
             <ExternalLink size={18} />
             LinkedIn
           </a>
+          <a href={portfolioLinks.resume} target="_blank" rel="noreferrer" data-tooltip="Open resume PDF">
+            <ClipboardCheck size={18} />
+            Official Player Dossier
+          </a>
+          <Link href="/" data-tooltip="Watch stadium entrance again">
+            <RotateCcw size={18} />
+            Replay Entrance
+          </Link>
           <button
             type="button"
             onClick={() => {

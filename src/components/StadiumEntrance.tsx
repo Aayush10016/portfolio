@@ -3,7 +3,7 @@
 import { ChevronRight, Trophy } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function StadiumEntrance() {
   const router = useRouter();
@@ -13,6 +13,12 @@ export default function StadiumEntrance() {
   const timers = useRef<number[]>([]);
   const sequence = ["JAVA", "SPRING BOOT", "SYSTEM DESIGN", "HIPHOPHUB", "JANADESH", "SWAT COIN", "OPEN SOURCE"];
   const trophyStorageKey = "extra-time-trophies";
+  const introStorageKey = "extra-time-intro-seen";
+
+  const clearTimers = useCallback(() => {
+    timers.current.forEach((timer) => window.clearTimeout(timer));
+    timers.current = [];
+  }, []);
 
   const awardEntryTrophy = () => {
     const entryTrophy = "stadium-entry";
@@ -29,11 +35,19 @@ export default function StadiumEntrance() {
   };
 
   useEffect(() => {
-    const activeTimers = timers.current;
     return () => {
-      activeTimers.forEach((timer) => window.clearTimeout(timer));
+      clearTimers();
     };
-  }, []);
+  }, [clearTimers]);
+
+  const finishIntro = () => {
+    try {
+      window.localStorage.setItem(introStorageKey, "true");
+    } catch {
+      // The route should still work when browser storage is unavailable.
+    }
+    router.push("/arena");
+  };
 
   const enterArena = () => {
     if (transitioning) {
@@ -41,13 +55,23 @@ export default function StadiumEntrance() {
     }
     awardEntryTrophy();
     setTransitioning(true);
+    try {
+      window.localStorage.setItem(introStorageKey, "true");
+    } catch {
+      // The transition should continue even if browser storage is unavailable.
+    }
     timers.current.push(
       window.setTimeout(() => setActiveWord(0), 950),
       ...sequence.slice(1).map((_, index) =>
         window.setTimeout(() => setActiveWord(index + 1), 950 + (index + 1) * 620)
       ),
-      window.setTimeout(() => router.push("/arena"), 950 + sequence.length * 620 + 260)
+      window.setTimeout(finishIntro, 950 + sequence.length * 620 + 260)
     );
+  };
+
+  const skipIntro = () => {
+    clearTimers();
+    finishIntro();
   };
 
   return (
@@ -79,6 +103,11 @@ export default function StadiumEntrance() {
       <div className={transitioning ? "stadium-transition-overlay active" : "stadium-transition-overlay"} aria-hidden={!transitioning}>
         {activeWord >= 0 ? <span className="transition-word" key={sequence[activeWord]}>{sequence[activeWord]}</span> : null}
       </div>
+      {transitioning ? (
+        <button className="skip-intro-button" type="button" onClick={skipIntro}>
+          Skip Intro
+        </button>
+      ) : null}
     </main>
   );
 }

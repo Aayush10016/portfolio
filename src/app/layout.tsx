@@ -12,11 +12,23 @@ const newsreader = Newsreader({
   subsets: ["latin"]
 });
 
+const siteOrigin =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined) ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ??
+  "https://aayush-tiwari-portfolio.vercel.app";
+
+const siteUrl = new URL(siteOrigin);
+const previewImage = new URL("/og-image.png", siteUrl).toString();
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: siteUrl,
   title: "EXTRA TIME | Aayush Tiwari",
   description:
     "A playable portfolio structured like a football match: Java, DSA, open source, music, systems, and one more attempt.",
+  alternates: {
+    canonical: "/"
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -30,7 +42,24 @@ export const metadata: Metadata = {
     title: "EXTRA TIME | Aayush Tiwari",
     description:
       "A playable interactive story about persistence, football, music, code, and building after the whistle.",
-    images: ["/stadium-night.png"]
+    url: "/",
+    siteName: "EXTRA TIME",
+    type: "website",
+    images: [
+      {
+        url: previewImage,
+        width: 1200,
+        height: 630,
+        alt: "EXTRA TIME, Aayush Tiwari's football stadium portfolio experience"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EXTRA TIME | Aayush Tiwari",
+    description:
+      "A playable interactive portfolio about football, backend engineering, music, systems, and one more attempt.",
+    images: [previewImage]
   }
 };
 
