@@ -1,5 +1,5 @@
-import ExtraTimeExperience from "@/components/ExtraTimeExperience";
+import StadiumEntrance from "@/components/StadiumEntrance";
 
 export default function Home() {
-  return <ExtraTimeExperience />;
+  return <StadiumEntrance />;
 }

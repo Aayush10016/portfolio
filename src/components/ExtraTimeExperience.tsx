@@ -19,8 +19,6 @@ import {
   Mail,
   Music2,
   Network,
-  Pause,
-  Play,
   Radar,
   Radio,
   RotateCcw,
@@ -28,34 +26,34 @@ import {
   Sparkles,
   Terminal,
   Trophy,
-  Volume2,
-  VolumeX,
   X,
   XCircle,
   CheckCircle2
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import gsap from "gsap";
-import * as THREE from "three";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 
 type AchievementId =
+  | "stadium-entry"
   | "explorer"
   | "architect"
   | "algorithm"
   | "bug-slayer"
   | "music"
+  | "hiphophub-open"
+  | "swat-risk-reader"
   | "extra-time"
   | "open-source"
   | "vault"
   | "control-room"
+  | "janadesh-architecture"
   | "lore"
   | "hidden-chant"
   | "operator"
   | "backend-builder"
   | "community-scout"
+  | "contact-reached"
   | "completionist";
 
 type ModalId = "trophy" | "swat-risk" | "builder-notes" | "operator-log" | null;
@@ -87,81 +85,108 @@ const portfolioLinks = {
   hiphophub: "https://hip-hop-hub.vercel.app/"
 };
 
+const trophyStorageKey = "extra-time-trophies";
+
 const achievements: Record<AchievementId, { title: string; detail: string; requirement: string }> = {
+  "stadium-entry": {
+    title: "First Match Attended",
+    detail: "Entered Aayush Tiwari Arena and began the build season.",
+    requirement: "Click ENTER THE STADIUM on the entrance page."
+  },
   explorer: {
     title: "Explorer",
     detail: "Entered the world instead of skimming the page.",
-    requirement: "Enter the match."
+    requirement: "Open the arena experience and start exploring the portfolio."
   },
   architect: {
     title: "Architect",
     detail: "Built a working system formation under pressure.",
-    requirement: "Solve a system design puzzle."
+    requirement: "Complete either System Design Puzzle with the correct architecture order."
   },
   algorithm: {
     title: "Algorithm Hunter",
     detail: "Read movement like match footage.",
-    requirement: "Answer an algorithm challenge correctly."
+    requirement: "Answer any Guess The Algorithm challenge correctly."
   },
   "bug-slayer": {
     title: "Bug Slayer",
     detail: "Found the small mistakes that change the score.",
-    requirement: "Fix all bug hunt scenarios."
+    requirement: "Solve every visible Bug Hunt scenario in the active category."
   },
   music: {
     title: "Music Curator",
     detail: "Opened the listening room and followed the rhythm.",
-    requirement: "Open a music-related discovery."
+    requirement: "Open a music discovery, HipHopHub note, or music-related hidden chant."
+  },
+  "hiphophub-open": {
+    title: "Listening Room Visitor",
+    detail: "Opened HipHopHub from the portfolio and followed the project beyond the arena.",
+    requirement: "Click Open HipHopHub in The Listening Room."
+  },
+  "swat-risk-reader": {
+    title: "Risk Analyst",
+    detail: "Read the SWAT Coin risk note before touching the reserve controls.",
+    requirement: "Open the SWAT Coin Risk Analysis modal."
   },
   "extra-time": {
     title: "Extra Time Survivor",
     detail: "Chose one more attempt after 90 minutes.",
-    requirement: "Start the experience."
+    requirement: "Discover the extra-time hidden chant or enter the after-hours story layer."
   },
   "open-source": {
     title: "Open Source Spirit",
     detail: "Found the open-source thread.",
-    requirement: "Find an open-source chant."
+    requirement: "Reveal or type the open-source hidden chant."
   },
   vault: {
     title: "Reserve Keeper",
     detail: "Balanced supply, reserves, and confidence.",
-    requirement: "Improve SWAT Coin market confidence."
+    requirement: "Use the SWAT Coin simulation until market confidence rises above 72."
   },
   "control-room": {
     title: "Election Operator",
     detail: "Inspected the voting infrastructure.",
-    requirement: "Interact with the Janadesh control room."
+    requirement: "Interact with any Janadesh architecture layer or open the operator log."
+  },
+  "janadesh-architecture": {
+    title: "Architecture Inspector",
+    detail: "Reviewed how identity, ballots, audits, and validation fit together.",
+    requirement: "Click any Janadesh architecture layer in The Control Room."
   },
   lore: {
     title: "Developer Lore",
     detail: "Found a story hidden off the main route.",
-    requirement: "Reveal a hidden personal story."
+    requirement: "Reveal any hidden discovery tied to a personal story."
   },
   "hidden-chant": {
     title: "Hidden Chant Finder",
     detail: "Discovered one of the words the site listens for.",
-    requirement: "Type or select any hidden chant."
+    requirement: "Type a hidden chant or select one from the Hidden Discoveries archive."
   },
   operator: {
     title: "Operator",
     detail: "Opened the mission log and followed the build chronology.",
-    requirement: "Open the Operator Log."
+    requirement: "Open the Janadesh Operator Log."
   },
   "backend-builder": {
     title: "Backend Builder",
     detail: "Tracked the systems thinking behind APIs, caches, queues, and trust.",
-    requirement: "Solve backend-oriented game content."
+    requirement: "Solve backend-oriented content in Bug Hunt or System Design Puzzle."
   },
   "community-scout": {
     title: "Community Scout",
     detail: "Found the part of the story that belongs to people, not just code.",
-    requirement: "Open community or open-source lore."
+    requirement: "Open a community or open-source hidden discovery."
+  },
+  "contact-reached": {
+    title: "Transfer Window",
+    detail: "Reached Full Time and opened the collaboration lane.",
+    requirement: "Scroll to the Full Time contact section."
   },
   completionist: {
     title: "Completionist",
     detail: "Collected every trophy in the room.",
-    requirement: "Unlock all other trophies."
+    requirement: "Unlock every other trophy listed in the Trophy Room."
   }
 };
 
@@ -371,31 +396,37 @@ const listeningNodes: ProjectNode[] = [
 const controlLayers = [
   {
     title: "Authentication Layer",
+    shortTitle: "Auth Layer",
     icon: LockKeyhole,
     body: "Voter identity is guarded before anything reaches the election engine."
   },
   {
     title: "OTP Verification",
+    shortTitle: "OTP",
     icon: ShieldCheck,
     body: "A short-lived verification ritual reduces impersonation and keeps the flow human."
   },
   {
     title: "Election Engine",
+    shortTitle: "Election",
     icon: Gauge,
     body: "Ballots move through deterministic rules, eligibility checks, and protected counting."
   },
   {
     title: "Blockchain Layer",
+    shortTitle: "Blockchain",
     icon: Blocks,
     body: "Important events become tamper-evident records instead of private promises."
   },
   {
     title: "Audit Trails",
+    shortTitle: "Audit",
     icon: Radar,
     body: "Every sensitive action leaves a trail so trust can be inspected after the match."
   },
   {
     title: "Admin Controls",
+    shortTitle: "Admin",
     icon: Database,
     body: "Operators can manage elections without bypassing the rules that protect voters."
   }
@@ -486,38 +517,54 @@ function formatMatchTime(totalSeconds: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+function formatWholeNumber(value: number) {
+  return Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function normalizeAchievementIds(values: unknown): AchievementId[] {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+  const validIds = Object.keys(achievements) as AchievementId[];
+  return values.filter((value, index) => (
+    typeof value === "string" &&
+    validIds.includes(value as AchievementId) &&
+    values.indexOf(value) === index
+  )) as AchievementId[];
+}
+
+function withCompletionist(ids: AchievementId[]): AchievementId[] {
+  const allIds = Object.keys(achievements) as AchievementId[];
+  const withoutCompletionist = ids.filter((id) => id !== "completionist");
+  if (withoutCompletionist.length >= allIds.length - 1) {
+    return [...withoutCompletionist, "completionist"];
+  }
+  return withoutCompletionist;
+}
+
 export default function ExtraTimeExperience() {
-  const [entered, setEntered] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
   const [time, setTime] = useState(90 * 60);
   const [achievementIds, setAchievementIds] = useState<AchievementId[]>([]);
   const [toast, setToast] = useState<Toast | null>(null);
   const [activeModal, setActiveModal] = useState<ModalId>(null);
   const [activeDiscovery, setActiveDiscovery] = useState<Discovery | null>(null);
-  const [cursor, setCursor] = useState({ x: -100, y: -100 });
-  const [cursorHidden, setCursorHidden] = useState(false);
   const [hudLifted, setHudLifted] = useState(true);
-  const audioRef = useRef<{
-    ctx: AudioContext;
-    gain: GainNode;
-    oscillators: OscillatorNode[];
-  } | null>(null);
 
-  const unlock = useCallback((id: AchievementId) => {
+  const unlock = useCallback((id: AchievementId, silent = false) => {
     setAchievementIds((current) => {
       if (current.includes(id)) {
         return current;
       }
-      const next = [...current, id];
-      if (
-        id !== "completionist" &&
-        !next.includes("completionist") &&
-        next.length >= Object.keys(achievements).length - 1
-      ) {
-        next.push("completionist");
+      const next = withCompletionist([...current, id]);
+      try {
+        window.localStorage.setItem(trophyStorageKey, JSON.stringify(next));
+      } catch {
+        // Trophy progress remains in memory when browser storage is unavailable.
       }
-      setToast({ label: "Achievement unlocked", title: achievements[id].title });
-      window.setTimeout(() => setToast(null), 2600);
+      if (!silent) {
+        setToast({ label: "Trophy Unlocked", title: achievements[id].title });
+        window.setTimeout(() => setToast(null), 2600);
+      }
       return next;
     });
   }, []);
@@ -528,71 +575,30 @@ export default function ExtraTimeExperience() {
   }, []);
 
   useEffect(() => {
-    gsap.to(".gsap-float", {
-      y: -10,
-      duration: 2.8,
-      yoyo: true,
-      repeat: -1,
-      ease: "sine.inOut",
-      stagger: 0.2
-    });
-    gsap.to(".floodlight", {
-      rotate: 5,
-      duration: 3.6,
-      yoyo: true,
-      repeat: -1,
-      ease: "sine.inOut",
-      stagger: 0.3
-    });
-  }, []);
+    const timer = window.setTimeout(() => {
+      try {
+        const stored = window.localStorage.getItem(trophyStorageKey);
+        const storedIds = normalizeAchievementIds(stored ? JSON.parse(stored) : []);
+        const next = withCompletionist(storedIds.includes("explorer") ? storedIds : [...storedIds, "explorer"]);
+        setAchievementIds(next);
+        window.localStorage.setItem(trophyStorageKey, JSON.stringify(next));
+        if (!storedIds.includes("explorer")) {
+          setToast({ label: "Trophy Unlocked", title: achievements.explorer.title });
+          window.setTimeout(() => setToast(null), 2600);
+        }
+      } catch {
+        unlock("explorer", true);
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [unlock]);
 
   useEffect(() => {
-    const handleMove = (event: MouseEvent) => {
-      setCursor({ x: event.clientX, y: event.clientY });
-      const protectedSelectors = [
-        ".match-hud",
-        ".scoreboard",
-        ".commentary-panel",
-        ".minute-card",
-        ".rating-tile",
-        ".game-shell",
-        ".world",
-        ".secret-grid",
-        ".full-scoreboard",
-        "button",
-        "a",
-        "h1",
-        "h2",
-        "h3",
-        "p"
-      ];
-      const insideProtectedContent = protectedSelectors.some((selector) =>
-        Array.from(document.querySelectorAll<HTMLElement>(selector)).some((element) => {
-          const rect = element.getBoundingClientRect();
-          const padding = 10;
-          return (
-            event.clientX >= rect.left - padding &&
-            event.clientX <= rect.right + padding &&
-            event.clientY >= rect.top - padding &&
-            event.clientY <= rect.bottom + padding
-          );
-        })
-      );
-      setCursorHidden(insideProtectedContent);
-    };
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, []);
-
-  useEffect(() => {
-    if (!entered) {
-      return;
-    }
     const interval = window.setInterval(() => {
       setTime((value) => value + 1);
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [entered]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -621,90 +627,36 @@ export default function ExtraTimeExperience() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [unlock]);
 
-  const startAudio = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.gain.gain.setTargetAtTime(soundOn ? 0 : 0.045, audioRef.current.ctx.currentTime, 0.08);
-      setSoundOn((value) => !value);
-      return;
-    }
-
-    const AudioCtor = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AudioCtor();
-    const gain = ctx.createGain();
-    gain.gain.value = 0.04;
-    gain.connect(ctx.destination);
-
-    const oscillators = [52, 78, 118].map((frequency) => {
-      const oscillator = ctx.createOscillator();
-      const filter = ctx.createBiquadFilter();
-      oscillator.frequency.value = frequency;
-      oscillator.type = "sine";
-      filter.type = "lowpass";
-      filter.frequency.value = 280;
-      oscillator.connect(filter);
-      filter.connect(gain);
-      oscillator.start();
-      return oscillator;
-    });
-
-    audioRef.current = { ctx, gain, oscillators };
-    setSoundOn(true);
-  }, [soundOn]);
-
-  const handleEnter = () => {
-    setEntered(true);
-    unlock("explorer");
-    unlock("extra-time");
-    window.setTimeout(() => {
-      document.getElementById("first-half")?.scrollIntoView({ behavior: "smooth" });
-    }, 500);
-  };
-
   const earned = achievementIds.map((id) => achievements[id]);
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-midnight text-cream">
-      <motion.div
-        className={clsx("custom-cursor", cursorHidden && "cursor-hidden")}
-        animate={{ x: cursor.x - 11, y: cursor.y - 11 }}
-        transition={{ type: "spring", stiffness: 450, damping: 32, mass: 0.2 }}
-      />
-
       <MatchHud
-        entered={entered}
         time={time}
-        soundOn={soundOn}
-        onSound={startAudio}
         achievements={achievementIds.length}
         onTrophies={() => setActiveModal("trophy")}
         lifted={hudLifted}
       />
 
-      <HeroGate entered={entered} onEnter={handleEnter} onSound={startAudio} soundOn={soundOn} />
-
-      <AnimatePresence>
-        {entered ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.1 }}
-            className="experience"
-          >
-            <FirstHalf />
-            <Halftime unlock={unlock} />
-            <SecondHalf unlock={unlock} setDiscovery={setActiveDiscovery} openModal={setActiveModal} />
-            <SecretDiscoveries
-              found={activeDiscovery}
-              onSelect={(discovery) => {
-                setActiveDiscovery(discovery);
-                unlock(discovery.achievement ?? "lore");
-                unlock("hidden-chant");
-              }}
-            />
-            <FullTime earned={earned} notify={notify} />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="experience"
+      >
+        <FirstHalf />
+        <Halftime unlock={unlock} />
+        <SecondHalf unlock={unlock} setDiscovery={setActiveDiscovery} openModal={setActiveModal} />
+        <SecretDiscoveries
+          found={activeDiscovery}
+          onSelect={(discovery) => {
+            setActiveDiscovery(discovery);
+            unlock(discovery.achievement ?? "lore");
+            unlock("hidden-chant");
+          }}
+        />
+        <FullTime earned={earned} notify={notify} unlock={unlock} />
+      </motion.div>
 
       <ModalLayer
         activeModal={activeModal}
@@ -731,25 +683,19 @@ export default function ExtraTimeExperience() {
 }
 
 function MatchHud({
-  entered,
   time,
-  soundOn,
-  onSound,
   achievements,
   onTrophies,
   lifted
 }: {
-  entered: boolean;
   time: number;
-  soundOn: boolean;
-  onSound: () => void;
   achievements: number;
   onTrophies: () => void;
   lifted: boolean;
 }) {
   return (
     <header className={clsx("match-hud", lifted && "match-hud-lifted")} aria-label="Match navigation">
-      <a className="brand-mark" href="#top" aria-label="Back to kickoff">
+      <a className="brand-mark" href="#first-half" aria-label="Back to first half">
         <CircleDot size={16} />
         <span>EXTRA TIME</span>
       </a>
@@ -760,7 +706,7 @@ function MatchHud({
         <a href="#full-time">Full Time</a>
       </nav>
       <div className="hud-actions">
-        {entered ? <span className="time-chip">+{formatMatchTime(time - 90 * 60)}</span> : null}
+        <span className="time-chip">+{formatMatchTime(time - 90 * 60)}</span>
         <button
           className="trophy-chip trophy-button"
           type="button"
@@ -771,80 +717,8 @@ function MatchHud({
           <Trophy size={14} />
           {achievements}
         </button>
-        <button className="icon-button" type="button" onClick={onSound} aria-label="Toggle stadium sound">
-          {soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}
-        </button>
       </div>
     </header>
-  );
-}
-
-function HeroGate({
-  entered,
-  onEnter,
-  onSound,
-  soundOn
-}: {
-  entered: boolean;
-  onEnter: () => void;
-  onSound: () => void;
-  soundOn: boolean;
-}) {
-  return (
-    <section id="top" className="hero-gate" aria-label="Kickoff screen">
-      <Image
-        src="/stadium-night.png"
-        alt="A rainy football stadium at night with floodlights and fog"
-        fill
-        priority
-        sizes="100vw"
-        className="stadium-image"
-      />
-      <div className="rain" />
-      <div className="fog fog-one" />
-      <div className="fog fog-two" />
-      <div className="floodlight floodlight-left" />
-      <div className="floodlight floodlight-right" />
-
-      <motion.div
-        className={clsx("scoreboard", entered && "scoreboard-entered")}
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.1, delay: 0.3 }}
-      >
-        <div className="broadcast-strip">
-          <span>Live from the after-hours stadium</span>
-          <span>Persistence FC</span>
-        </div>
-        <h1>AAYUSH TIWARI</h1>
-        <motion.div
-          className="score-time"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: [1, 1, 0, 1] }}
-          transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.4 }}
-        >
-          <span>90:00</span>
-          <strong>+10 EXTRA TIME</strong>
-        </motion.div>
-        <p>
-          A playable autobiography about football, code, music, and the one more attempt
-          that happens after the regular whistle.
-        </p>
-        <div className="hero-actions">
-          <button className="magnetic-button primary" type="button" onClick={onEnter}>
-            ENTER THE MATCH
-            <ChevronRight size={18} />
-          </button>
-          <button className="magnetic-button ghost" type="button" onClick={onSound}>
-            {soundOn ? <Pause size={16} /> : <Play size={16} />}
-            Stadium ambience
-          </button>
-        </div>
-      </motion.div>
-      <div className="next-peek">
-        <span>Minute 12 waits below</span>
-      </div>
-    </section>
   );
 }
 
@@ -890,7 +764,7 @@ function FirstHalf() {
       <div className="match-stats-band">
         <div>
           <p className="eyebrow">Player ratings</p>
-          <h3>Skill progression as a season card</h3>
+          <h3>Skills</h3>
         </div>
         <div className="ratings-grid">
           {ratings.map(([label, value]) => (
@@ -1536,7 +1410,24 @@ function SystemPuzzle({ unlock }: { unlock: (id: AchievementId) => void }) {
             </button>
           ))}
         </div>
-        <span className="score-chip">System score {score}</span>
+        <div className="system-score-box">
+          <span className="score-chip">System score {score}</span>
+          <div className="system-actions">
+            <button type="button" onClick={submit}>
+              Submit formation
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setFormation([]);
+                setResult("idle");
+              }}
+            >
+              <RotateCcw size={15} />
+              Reset
+            </button>
+          </div>
+        </div>
       </div>
       <div className="formation-board">
         {activePuzzle.correct.map((_, index) => (
@@ -1567,19 +1458,6 @@ function SystemPuzzle({ unlock }: { unlock: (id: AchievementId) => void }) {
             {item}
           </button>
         ))}
-        <button type="button" onClick={submit}>
-          Submit formation
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setFormation([]);
-            setResult("idle");
-          }}
-        >
-          <RotateCcw size={15} />
-          Reset
-        </button>
       </div>
     </motion.div>
   );
@@ -1642,7 +1520,13 @@ function ListeningRoom({
           <Headphones size={18} />
           Unlock the HipHopHub liner note
         </button>
-        <a className="artifact-button" href={portfolioLinks.hiphophub} target="_blank" rel="noreferrer">
+        <a
+          className="artifact-button"
+          href={portfolioLinks.hiphophub}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => unlock("hiphophub-open")}
+        >
           <ExternalLink size={18} />
           Open HipHopHub
         </a>
@@ -1744,11 +1628,12 @@ function ControlRoom({
                 onClick={() => {
                   setActive(layer);
                   unlock("control-room");
+                  unlock("janadesh-architecture");
                 }}
                 style={{ "--delay": `${index * 90}ms` } as React.CSSProperties}
               >
                 <Icon size={18} />
-                <span>{layer.title}</span>
+                <span>{layer.shortTitle}</span>
               </button>
             );
           })}
@@ -1803,6 +1688,7 @@ function ReserveVault({
           type="button"
           onClick={() => {
             unlock("vault");
+            unlock("swat-risk-reader");
             setDiscovery(discoveries.find((item) => item.key === "swat")!);
             openModal("swat-risk");
           }}
@@ -1816,7 +1702,7 @@ function ReserveVault({
         <div className="vault-controls">
           <div className="vault-stat">
             <span>Supply</span>
-            <strong>{supply.toLocaleString()} SWAT</strong>
+            <strong>{formatWholeNumber(supply)} SWAT</strong>
           </div>
           <div className="vault-health">
             <span>Token health</span>
@@ -1911,86 +1797,116 @@ function ReserveThree({ stability, confidence }: { stability: number; confidence
       return;
     }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, mount.clientWidth / mount.clientHeight, 0.1, 100);
-    camera.position.z = 4.2;
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.35));
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
-    mount.appendChild(renderer.domElement);
-
-    const group = new THREE.Group();
-    scene.add(group);
-
-    const geometry = new THREE.TorusKnotGeometry(1, 0.26, 96, 14);
-    const material = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#C59A4A"),
-      metalness: 0.85,
-      roughness: 0.22,
-      emissive: new THREE.Color("#153D30"),
-      emissiveIntensity: 0.35
-    });
-    const coin = new THREE.Mesh(geometry, material);
-    group.add(coin);
-
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(1.72, 0.018, 12, 120),
-      new THREE.MeshBasicMaterial({ color: "#F5F1E8", transparent: true, opacity: 0.25 })
-    );
-    group.add(ring);
-
-    const key = new THREE.PointLight("#F5F1E8", 2.6, 10);
-    key.position.set(2.4, 2.2, 3);
-    scene.add(key);
-    const fill = new THREE.PointLight("#5B1720", 1.4, 10);
-    fill.position.set(-2.5, -1.5, 2);
-    scene.add(fill);
-
-    let frame = 0;
-    const animate = () => {
-      frame = requestAnimationFrame(animate);
-      if (!visibleRef.current) {
+    void import("three").then((THREE) => {
+      if (cancelled || !mount.isConnected) {
         return;
       }
-      const liveStability = stabilityRef.current;
-      const liveConfidence = confidenceRef.current;
-      coin.rotation.x += 0.006 + liveStability / 18000;
-      coin.rotation.y += 0.01 + liveConfidence / 16000;
-      ring.rotation.z -= 0.006;
-      material.emissiveIntensity += (0.18 + liveConfidence / 230 - material.emissiveIntensity) * 0.08;
-      renderer.render(scene, camera);
-    };
-    animate();
 
-    const resize = () => {
-      camera.aspect = mount.clientWidth / mount.clientHeight;
-      camera.updateProjectionMatrix();
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(55, mount.clientWidth / mount.clientHeight, 0.1, 100);
+      camera.position.z = 4.2;
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "low-power" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.1));
       renderer.setSize(mount.clientWidth, mount.clientHeight);
-    };
-    window.addEventListener("resize", resize);
+      mount.appendChild(renderer.domElement);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting;
-        if (entry.isIntersecting) {
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const geometry = new THREE.TorusKnotGeometry(1, 0.26, 64, 10);
+      const material = new THREE.MeshStandardMaterial({
+        color: new THREE.Color("#C59A4A"),
+        metalness: 0.82,
+        roughness: 0.26,
+        emissive: new THREE.Color("#153D30"),
+        emissiveIntensity: 0.28
+      });
+      const coin = new THREE.Mesh(geometry, material);
+      group.add(coin);
+
+      const ringGeometry = new THREE.TorusGeometry(1.72, 0.018, 10, 72);
+      const ringMaterial = new THREE.MeshBasicMaterial({ color: "#F5F1E8", transparent: true, opacity: 0.25 });
+      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+      group.add(ring);
+
+      const key = new THREE.PointLight("#F5F1E8", 2.2, 10);
+      key.position.set(2.4, 2.2, 3);
+      scene.add(key);
+      const fill = new THREE.PointLight("#5B1720", 1.1, 10);
+      fill.position.set(-2.5, -1.5, 2);
+      scene.add(fill);
+
+      let frame = 0;
+      let resizeFrame = 0;
+
+      const renderFrame = () => {
+        if (!visibleRef.current) {
           renderer.render(scene, camera);
+          return;
         }
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(mount);
+        const liveStability = stabilityRef.current;
+        const liveConfidence = confidenceRef.current;
+        coin.rotation.x += 0.004 + liveStability / 22000;
+        coin.rotation.y += 0.007 + liveConfidence / 21000;
+        ring.rotation.z -= 0.004;
+        material.emissiveIntensity += (0.16 + liveConfidence / 260 - material.emissiveIntensity) * 0.06;
+        renderer.render(scene, camera);
+      };
+
+      const animate = () => {
+        frame = requestAnimationFrame(animate);
+        if (visibleRef.current) {
+          renderFrame();
+        }
+      };
+      animate();
+
+      const resize = () => {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(() => {
+          if (!mount.clientWidth || !mount.clientHeight) {
+            return;
+          }
+          camera.aspect = mount.clientWidth / mount.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(mount.clientWidth, mount.clientHeight);
+          renderer.render(scene, camera);
+        });
+      };
+      window.addEventListener("resize", resize, { passive: true });
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          visibleRef.current = entry.isIntersecting;
+          if (entry.isIntersecting) {
+            renderFrame();
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(mount);
+
+      cleanup = () => {
+        cancelAnimationFrame(frame);
+        cancelAnimationFrame(resizeFrame);
+        window.removeEventListener("resize", resize);
+        observer.disconnect();
+        geometry.dispose();
+        material.dispose();
+        ringGeometry.dispose();
+        ringMaterial.dispose();
+        renderer.dispose();
+        renderer.domElement.remove();
+      };
+    });
 
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("resize", resize);
-      observer.disconnect();
-      geometry.dispose();
-      material.dispose();
-      ring.geometry.dispose();
-      (ring.material as THREE.Material).dispose();
-      renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 
@@ -2139,9 +2055,12 @@ function ModalLayer({
               <>
                 <p className="eyebrow">Trophy Room</p>
                 <h2>Trophy Room</h2>
+                <p className="trophy-progress-line">
+                  {collected} / {total} trophies unlocked
+                </p>
                 <div className="trophy-summary">
                   <span>Total trophies: {total}</span>
-                  <span>Collected: {collected}</span>
+                  <span>Earned: {collected}</span>
                   <span>Locked: {Math.max(0, total - collected)}</span>
                   <strong>{percent}% complete</strong>
                   <div>
@@ -2156,8 +2075,8 @@ function ModalLayer({
                         {unlocked ? <Trophy size={18} /> : <LockKeyhole size={18} />}
                         <h3>{trophy.title}</h3>
                         <p>{trophy.detail}</p>
-                        <span>{trophy.requirement}</span>
-                        <strong>{unlocked ? "Unlocked" : "Locked"}</strong>
+                        <strong>Status: {unlocked ? "Unlocked" : "Locked"}</strong>
+                        <span>How to unlock: {trophy.requirement}</span>
                       </article>
                     );
                   })}
@@ -2254,7 +2173,16 @@ function ModalLayer({
   );
 }
 
-function FullTime({ earned, notify }: { earned: { title: string; detail: string }[]; notify: (title: string, label?: string) => void }) {
+function FullTime({
+  earned,
+  notify,
+  unlock
+}: {
+  earned: { title: string; detail: string }[];
+  notify: (title: string, label?: string) => void;
+  unlock: (id: AchievementId) => void;
+}) {
+  const sectionRef = useRef<HTMLElement | null>(null);
   const stats = [
     ["Ideas Built", "Always counting"],
     ["Projects Completed", "HipHopHub, Janadesh, SWAT Coin"],
@@ -2268,8 +2196,26 @@ function FullTime({ earned, notify }: { earned: { title: string; detail: string 
   );
   const introMessage = "Hi Aayush,\n\nI explored your portfolio and would love to connect and discuss opportunities.";
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          unlock("contact-reached");
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.42 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [unlock]);
+
   return (
-    <section id="full-time" className="phase full-time">
+    <section id="full-time" className="phase full-time" ref={sectionRef}>
       <div className="full-scoreboard">
         <div className="broadcast-strip">
           <span>Full Time</span>
@@ -2335,10 +2281,4 @@ function FullTime({ earned, notify }: { earned: { title: string; detail: string 
       </footer>
     </section>
   );
-}
-
-declare global {
-  interface Window {
-    webkitAudioContext?: typeof AudioContext;
-  }
 }
