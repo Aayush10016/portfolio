@@ -12,14 +12,8 @@ const newsreader = Newsreader({
   subsets: ["latin"]
 });
 
-const siteOrigin =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined) ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined) ??
-  "https://aayush-tiwari-portfolio.vercel.app";
-
-const siteUrl = new URL(siteOrigin);
-const previewImage = new URL("/og-image.png", siteUrl).toString();
+const siteUrl = new URL("https://portfolio-aayush-tiwari.vercel.app");
+const previewImage = "https://portfolio-aayush-tiwari.vercel.app/stadium-night.png";
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,

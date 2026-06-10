@@ -84,7 +84,7 @@ const portfolioLinks = {
   github: "https://github.com/Aayush10016",
   linkedin: "https://www.linkedin.com/in/aayush-tiwari-048558347/",
   hiphophub: "https://hip-hop-hub.vercel.app/",
-  resume: "/aayush-tiwari-resume.pdf"
+  resume: "/resume.pdf"
 };
 
 const trophyStorageKey = "extra-time-trophies";
@@ -1590,7 +1590,7 @@ function ListeningRoom({
     <article className="world listening-room">
       <div className="world-copy">
         <p className="eyebrow">Project 1</p>
-        <h3>The Listening Room</h3>
+        <h3>HipHopHub</h3>
         <p>
           HipHopHub is treated like a record store after midnight: the point is not
           only to search, but to follow relationships until discovery feels earned.
@@ -1714,7 +1714,7 @@ function ControlRoom({
     <article className="world control-room">
       <div className="world-copy">
         <p className="eyebrow">Project 2</p>
-        <h3>The Control Room</h3>
+        <h3>Janadesh</h3>
         <p>
           Janadesh turns voting infrastructure into a room of switches, checks, and
           audit trails. Click every layer to inspect how trust moves.
@@ -1810,7 +1810,7 @@ function ReserveVault({
     <article className="world reserve-vault">
       <div className="world-copy">
         <p className="eyebrow">Project 3</p>
-        <h3>The Reserve Vault</h3>
+        <h3>SWAT Coin</h3>
         <p>
           SWAT Coin becomes a live token mechanics simulator. Minting, burning, and
           reserve policy visibly change stability, inflation risk, reserve health,
@@ -2244,7 +2244,7 @@ function ModalLayer({
                     </a>
                   </article>
                   <article>
-                    <span>Official Player Dossier</span>
+                    <span>Player Resume</span>
                     <a href={portfolioLinks.resume} target="_blank" rel="noreferrer">
                       Open resume PDF
                     </a>
@@ -2369,7 +2369,7 @@ function FullTime({
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stats = [
-    ["Ideas Built", "Always counting"],
+    ["Builds Shipped", "3 and counting"],
     ["Projects Completed", "HipHopHub, Janadesh, SWAT Coin"],
     ["Technologies Learned", "Java, DSA, Blockchain, APIs, Web3"],
     ["Open Source Contributions", "Hacktoberfest and beyond"],
@@ -2440,7 +2440,7 @@ function FullTime({
           </a>
           <a href={portfolioLinks.github} target="_blank" rel="noreferrer" data-tooltip="Enter the code tunnel">
             <Code2 size={18} />
-            Visit code tunnel
+            GitHub
           </a>
           <a href={portfolioLinks.linkedin} target="_blank" rel="noreferrer" data-tooltip="Open LinkedIn profile">
             <ExternalLink size={18} />
@@ -2448,7 +2448,7 @@ function FullTime({
           </a>
           <a href={portfolioLinks.resume} target="_blank" rel="noreferrer" data-tooltip="Open resume PDF">
             <ClipboardCheck size={18} />
-            Official Player Dossier
+            Player Resume
           </a>
           <Link href="/" data-tooltip="Watch stadium entrance again">
             <RotateCcw size={18} />
