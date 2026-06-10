@@ -2455,8 +2455,40 @@ p {
   transition: height 220ms ease;
 }
 
-.control-cluster button {
+.control-cluster button,
+.metrics-toggle {
   flex: 1 1 120px;
+}
+
+.metrics-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(245, 241, 232, 0.14);
+  border-radius: 7px;
+  background: rgba(245, 241, 232, 0.06);
+  color: var(--cream);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 850;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.metrics-toggle:hover {
+  transform: translateY(-1px);
+  border-color: rgba(197, 154, 74, 0.52);
+  background: rgba(197, 154, 74, 0.1);
+}
+
+.vault-metrics-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.vault-metrics-panel[hidden] {
+  display: none;
 }
 
 .slider-label {

@@ -1789,6 +1789,7 @@ function ReserveVault({
   const [reserve, setReserve] = useState(62);
   const [burned, setBurned] = useState(0);
   const [pulse, setPulse] = useState<"mint" | "burn" | "reserve" | null>(null);
+  const [metricsOpen, setMetricsOpen] = useState(false);
   const minted = Math.max(0, supply - 100000);
   const inflationRisk = Math.min(100, Math.max(8, minted / 1800 + (70 - reserve)));
   const stability = Math.max(0, Math.min(100, reserve - inflationRisk / 3 + burned / 2500));
@@ -1884,30 +1885,41 @@ function ReserveVault({
               Decrease Reserve
             </button>
           </div>
-          <label className="slider-label">
-            <span>Reserve ratio: {reserve}%</span>
-            <input
-              type="range"
-              min="30"
-              max="95"
-              value={reserve}
-              onChange={(event) => {
-                setReserve(Number(event.target.value));
-                feedback("reserve");
-              }}
-            />
-          </label>
-          <div className="reserve-dashboard" aria-label="Interactive reserve dashboard">
-            {[reserve, supply / 1600, stability, 100 - inflationRisk, confidence].map((value, index) => (
-              <i key={index} style={{ height: `${Math.max(12, Math.min(100, value))}%` }} />
-            ))}
+          <button
+            className="metrics-toggle"
+            type="button"
+            aria-expanded={metricsOpen}
+            aria-controls="swat-metrics-panel"
+            onClick={() => setMetricsOpen((value) => !value)}
+          >
+            {metricsOpen ? "Hide metrics" : "View metrics"}
+          </button>
+          <div id="swat-metrics-panel" className={clsx("vault-metrics-panel", metricsOpen && "open")} hidden={!metricsOpen}>
+            <label className="slider-label">
+              <span>Reserve ratio: {reserve}%</span>
+              <input
+                type="range"
+                min="30"
+                max="95"
+                value={reserve}
+                onChange={(event) => {
+                  setReserve(Number(event.target.value));
+                  feedback("reserve");
+                }}
+              />
+            </label>
+            <div className="reserve-dashboard" aria-label="Interactive reserve dashboard">
+              {[reserve, supply / 1600, stability, 100 - inflationRisk, confidence].map((value, index) => (
+                <i key={index} style={{ height: `${Math.max(12, Math.min(100, value))}%` }} />
+              ))}
+            </div>
+            <Metric label="Reserve Ratio" value={reserve} />
+            <Metric label="Supply Pressure" value={Math.min(100, supply / 1600)} invert />
+            <Metric label="Stability" value={stability} />
+            <Metric label="Inflation risk" value={inflationRisk} invert />
+            <Metric label="Reserve health" value={reserve} />
+            <Metric label="Market confidence" value={confidence} />
           </div>
-          <Metric label="Reserve Ratio" value={reserve} />
-          <Metric label="Supply Pressure" value={Math.min(100, supply / 1600)} invert />
-          <Metric label="Stability" value={stability} />
-          <Metric label="Inflation risk" value={inflationRisk} invert />
-          <Metric label="Reserve health" value={reserve} />
-          <Metric label="Market confidence" value={confidence} />
         </div>
       </div>
     </article>
