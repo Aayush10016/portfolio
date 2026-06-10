@@ -6,7 +6,6 @@ import {
   Blocks,
   Bug,
   ChevronRight,
-  CircleDot,
   Code2,
   ClipboardCheck,
   Database,
@@ -31,6 +30,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "clsx";
 
@@ -56,7 +56,7 @@ type AchievementId =
   | "contact-reached"
   | "completionist";
 
-type ModalId = "trophy" | "swat-risk" | "builder-notes" | "operator-log" | null;
+type ModalId = "trophy" | "swat-risk" | "builder-notes" | "operator-log" | "scout-report" | null;
 
 type Toast = {
   label: string;
@@ -86,6 +86,50 @@ const portfolioLinks = {
 };
 
 const trophyStorageKey = "extra-time-trophies";
+
+const profileSummary = {
+  name: "Aayush Tiwari",
+  education: "Engineering learning track focused on backend systems, DSA, and blockchain.",
+  coreSkills: ["Backend Engineering", "System Design", "DSA", "Blockchain", "Product Thinking"],
+  projects: ["HipHopHub", "Janadesh", "SWAT Coin"]
+};
+
+const coreLineup = [
+  "Java",
+  "Spring Boot",
+  "SQL",
+  "DSA",
+  "Blockchain",
+  "Solidity",
+  "Git",
+  "GitHub",
+  "REST APIs",
+  "System Design"
+];
+
+const projectBriefs = {
+  hiphophub: {
+    name: "HipHopHub",
+    purpose: "Music discovery platform for exploring artists, songs, relationships, and communities.",
+    stack: "Next.js, TypeScript, graph-style discovery UI, music data modeling",
+    features: "Artist universe exploration, relationship graph, listening-room notes, live project link",
+    live: "https://hip-hop-hub.vercel.app/"
+  },
+  janadesh: {
+    name: "Janadesh",
+    purpose: "Voting infrastructure concept for secure institutional elections and audit-ready workflows.",
+    stack: "Authentication, OTP verification, election engine, blockchain validation, audit trails",
+    features: "Clickable architecture layers, operator log, admin controls, tamper-evident flow",
+    live: "Interactive control room in this portfolio"
+  },
+  swat: {
+    name: "SWAT Coin",
+    purpose: "Educational stablecoin engineering study focused on reserves, supply, and token health.",
+    stack: "Blockchain concepts, token economics, reserve simulation, systems modeling",
+    features: "Mint, burn, reserve controls, stability core, risk note, live metric feedback",
+    live: "Interactive reserve vault in this portfolio"
+  }
+};
 
 const achievements: Record<AchievementId, { title: string; detail: string; requirement: string }> = {
   "stadium-entry": {
@@ -635,6 +679,7 @@ export default function ExtraTimeExperience() {
         time={time}
         achievements={achievementIds.length}
         onTrophies={() => setActiveModal("trophy")}
+        onScoutReport={() => setActiveModal("scout-report")}
         lifted={hudLifted}
       />
 
@@ -644,7 +689,7 @@ export default function ExtraTimeExperience() {
         transition={{ duration: 0.8 }}
         className="experience"
       >
-        <FirstHalf />
+        <FirstHalf openScoutReport={() => setActiveModal("scout-report")} />
         <Halftime unlock={unlock} />
         <SecondHalf unlock={unlock} setDiscovery={setActiveDiscovery} openModal={setActiveModal} />
         <SecretDiscoveries
@@ -686,17 +731,19 @@ function MatchHud({
   time,
   achievements,
   onTrophies,
+  onScoutReport,
   lifted
 }: {
   time: number;
   achievements: number;
   onTrophies: () => void;
+  onScoutReport: () => void;
   lifted: boolean;
 }) {
   return (
     <header className={clsx("match-hud", lifted && "match-hud-lifted")} aria-label="Match navigation">
       <a className="brand-mark" href="#first-half" aria-label="Back to first half">
-        <CircleDot size={16} />
+        <Image src="/at-crest.svg" alt="" width={18} height={18} aria-hidden="true" />
         <span>EXTRA TIME</span>
       </a>
       <nav className="phase-nav" aria-label="Match phases">
@@ -707,6 +754,15 @@ function MatchHud({
       </nav>
       <div className="hud-actions">
         <span className="time-chip">+{formatMatchTime(time - 90 * 60)}</span>
+        <button
+          className="trophy-chip scout-button"
+          type="button"
+          onClick={onScoutReport}
+          data-tooltip="Open recruiter quick view"
+        >
+          <Eye size={14} />
+          Scout
+        </button>
         <button
           className="trophy-chip trophy-button"
           type="button"
@@ -722,7 +778,7 @@ function MatchHud({
   );
 }
 
-function FirstHalf() {
+function FirstHalf({ openScoutReport }: { openScoutReport: () => void }) {
   return (
     <section id="first-half" className="phase first-half">
       <div className="phase-kicker">
@@ -761,6 +817,7 @@ function FirstHalf() {
           ))}
         </div>
       </div>
+      <CoreLineup openScoutReport={openScoutReport} />
       <div className="match-stats-band">
         <div>
           <p className="eyebrow">Player ratings</p>
@@ -779,6 +836,33 @@ function FirstHalf() {
         </div>
       </div>
     </section>
+  );
+}
+
+function CoreLineup({ openScoutReport }: { openScoutReport: () => void }) {
+  return (
+    <div className="core-lineup" aria-label="Core technical lineup">
+      <div className="lineup-copy">
+        <p className="eyebrow">Core Lineup</p>
+        <h3>Matchday squad for the build.</h3>
+        <p>
+          The creative surface is the stadium. Under it is a practical backend
+          stack built around Java, systems thinking, data, APIs, and blockchain.
+        </p>
+        <button type="button" className="artifact-button" onClick={openScoutReport}>
+          <Eye size={18} />
+          Open Scout Report
+        </button>
+      </div>
+      <div className="lineup-pitch">
+        {coreLineup.map((item, index) => (
+          <span key={item} style={{ "--lineup-delay": `${index * 34}ms` } as React.CSSProperties}>
+            <ShieldCheck size={15} />
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1509,6 +1593,7 @@ function ListeningRoom({
           HipHopHub is treated like a record store after midnight: the point is not
           only to search, but to follow relationships until discovery feels earned.
         </p>
+        <ProjectBrief brief={projectBriefs.hiphophub} />
         <button
           className="artifact-button"
           type="button"
@@ -1568,6 +1653,51 @@ function ListeningRoom({
   );
 }
 
+function ProjectBrief({
+  brief
+}: {
+  brief: {
+    name: string;
+    purpose: string;
+    stack: string;
+    features: string;
+    live: string;
+  };
+}) {
+  return (
+    <dl className="project-brief" aria-label={`${brief.name} project summary`}>
+      <div>
+        <dt>Project Name</dt>
+        <dd>{brief.name}</dd>
+      </div>
+      <div>
+        <dt>Purpose</dt>
+        <dd>{brief.purpose}</dd>
+      </div>
+      <div>
+        <dt>Tech Stack</dt>
+        <dd>{brief.stack}</dd>
+      </div>
+      <div>
+        <dt>Key Features</dt>
+        <dd>{brief.features}</dd>
+      </div>
+      <div>
+        <dt>Live Link</dt>
+        <dd>
+          {brief.live.startsWith("https://") ? (
+            <a href={brief.live} target="_blank" rel="noreferrer">
+              Open live project
+            </a>
+          ) : (
+            brief.live
+          )}
+        </dd>
+      </div>
+    </dl>
+  );
+}
+
 function ControlRoom({
   unlock,
   openModal
@@ -1587,6 +1717,7 @@ function ControlRoom({
           Janadesh turns voting infrastructure into a room of switches, checks, and
           audit trails. Click every layer to inspect how trust moves.
         </p>
+        <ProjectBrief brief={projectBriefs.janadesh} />
         <button
           className="artifact-button"
           type="button"
@@ -1683,6 +1814,7 @@ function ReserveVault({
           reserve policy visibly change stability, inflation risk, reserve health,
           and market confidence.
         </p>
+        <ProjectBrief brief={projectBriefs.swat} />
         <button
           className="artifact-button"
           type="button"
@@ -2080,6 +2212,51 @@ function ModalLayer({
                       </article>
                     );
                   })}
+                </div>
+              </>
+            ) : null}
+
+            {activeModal === "scout-report" ? (
+              <>
+                <p className="eyebrow">Scout Report</p>
+                <h2>Recruiter Quick View</h2>
+                <div className="scout-report">
+                  <article>
+                    <span>Name</span>
+                    <strong>{profileSummary.name}</strong>
+                  </article>
+                  <article>
+                    <span>Email</span>
+                    <a href={`mailto:${portfolioLinks.email}`}>{portfolioLinks.email}</a>
+                  </article>
+                  <article>
+                    <span>LinkedIn</span>
+                    <a href={portfolioLinks.linkedin} target="_blank" rel="noreferrer">
+                      Open profile
+                    </a>
+                  </article>
+                  <article>
+                    <span>GitHub</span>
+                    <a href={portfolioLinks.github} target="_blank" rel="noreferrer">
+                      View code
+                    </a>
+                  </article>
+                  <article className="wide">
+                    <span>Education</span>
+                    <p>{profileSummary.education}</p>
+                  </article>
+                  <article className="wide">
+                    <span>Core Skills</span>
+                    <p>{profileSummary.coreSkills.join(" / ")}</p>
+                  </article>
+                  <article className="wide">
+                    <span>Projects</span>
+                    <p>{profileSummary.projects.join(" / ")}</p>
+                  </article>
+                  <article className="wide">
+                    <span>Tech Stack</span>
+                    <p>{coreLineup.join(" / ")}</p>
+                  </article>
                 </div>
               </>
             ) : null}
