@@ -1322,14 +1322,17 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  width: 56px;
-  height: 56px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--cream);
-  color: var(--midnight);
+  width: 60px;
+  height: 38px;
+  border-radius: 6px;
+  background: var(--navy);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 12px rgba(197, 154, 74, 0.15);
+  font-family: monospace;
   font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 1px;
 }
 
 .minute-card h3 {

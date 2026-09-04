@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -66,6 +67,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${newsreader.variable}`}>
         {children}
+        <ScrollToTop />
       </body>
     </html>
   );
