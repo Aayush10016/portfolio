@@ -2258,7 +2258,7 @@ function ModalLayer({
                   <article>
                     <span>Player Resume</span>
                     <a href={portfolioLinks.resume} target="_blank" rel="noreferrer">
-                      Open resume PDF
+                      Player Resume
                     </a>
                   </article>
                   <article className="wide">
