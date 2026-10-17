@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
-import ScrollToTop from "@/components/ScrollToTop";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"]
-});
-
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"]
-});
+import "./experience.css";
+import "./landing.css";
+import "./content-motion.css";
+import "./typography.css";
+import ExperienceShell from "@/components/ExperienceShell";
 
 const siteUrl = new URL("https://portfolio-aayush-tiwari.vercel.app");
 const previewImage = "https://portfolio-aayush-tiwari.vercel.app/stadium-night.png";
@@ -20,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: siteUrl,
   title: "EXTRA TIME | Aayush Tiwari",
   description:
-    "A playable portfolio structured like a football match: Java, DSA, open source, music, systems, and one more attempt.",
+    "A playable portfolio structured like a football match: Java, Spring Boot, AI tooling, music, systems, and one more attempt.",
   alternates: {
     canonical: "/"
   },
@@ -64,10 +57,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${newsreader.variable}`}>
-        {children}
-        <ScrollToTop />
+    <html lang="en" data-scroll-behavior="smooth">
+      <head>
+        <link rel="preload" href="/fonts/fraunces-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
+        <link rel="preload" href="/fonts/anybody-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
+        <link rel="preload" href="/fonts/commissioner-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
+      </head>
+      <body>
+        <ExperienceShell>{children}</ExperienceShell>
       </body>
     </html>
   );

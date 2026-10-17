@@ -1,0 +1,27 @@
+/* Typography roles: display, reading/UI, and technical metadata. */
+h1,h2,h3{font-family:var(--font-display);font-stretch:90%;font-weight:520;letter-spacing:-.035em}
+.landing-intro h1{font-weight:540;font-stretch:86%;letter-spacing:-.045em;line-height:1.02}
+.landing-intro h1 em,.view-content h1 em,.landing-experience-heading h2 em,.portfolio-dialog h2 em{font-family:inherit;font-size:1em;font-style:normal;font-weight:inherit;line-height:inherit;letter-spacing:inherit}
+.landing-intro h1 em{font-weight:620;color:#edf0dc}
+.identity-symbol{font-family:var(--font-display);font-style:normal;font-weight:650;font-stretch:85%;letter-spacing:-.1em}
+.identity>span:last-child{font-family:var(--font-display);font-stretch:95%;font-weight:550;letter-spacing:.025em}
+.identity small{font-family:var(--font-mono);font-weight:400;letter-spacing:.07em}
+.landing-project-caption strong,.flow-step-copy b,.project-tabs button{font-family:var(--font-display);font-stretch:90%;font-weight:520;letter-spacing:-.025em}
+.project-tabs button>span{font-family:var(--font-mono);font-weight:400;font-stretch:normal;letter-spacing:0}
+.quiet-stat strong,.case-stats strong{font-family:var(--font-display);font-stretch:85%;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+.button-primary,.button-text,.header-resume,.social-links a,.social-links button,.site-header nav{font-family:var(--font-body);font-weight:500;letter-spacing:.005em}
+.landing-score b,.home-scorebug strong,.match-scorebug,.score-chip{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:500}
+.project-story .stack-line,.code-board,.code-board button,.flow-index,.formation-slot>span{font-family:var(--font-mono)}
+.guardian-diagram text{font-family:var(--font-mono);font-weight:400}
+.landing-chapter-number small,.landing-role,.flow-hint{letter-spacing:.06em}
+@media(max-width:700px){.landing-intro h1 em{display:block}.landing-experience-heading h2{font-size:16px}.landing-experience-heading h2 em{font-size:1em;margin-left:.12em}}
+.game-progress,.bug-status{font-family:var(--font-mono)}.quiet-stat span,.case-stats span{font-family:var(--font-mono);font-size:9px;line-height:1.7}
+
+/* A separate name signature; all other typography roles stay unchanged. */
+@font-face{font-family:Fraunces;src:url('/fonts/fraunces-variable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+.landing-intro h1{font-family:Fraunces,Georgia,serif;font-stretch:normal;font-weight:500;font-optical-sizing:auto;letter-spacing:-.055em;line-height:1.02}
+.landing-intro h1 em{font-weight:500;letter-spacing:inherit}
+.landing-project-cue{display:flex;align-items:center;gap:6px;margin-top:10px;color:#dce9a4;font:8px var(--font-body);letter-spacing:.02em}
+.landing-project-cue svg{transition:transform .25s}
+.landing-project:is(:hover,:focus-visible) .landing-project-cue svg{transform:translate(2px,-2px)}
+@media(max-width:700px){.landing-project-top>span{display:inline;font:5.5px var(--font-mono);letter-spacing:0;margin-left:5px;white-space:nowrap}.landing-project-top>svg:first-child{display:none}.landing-project-top>svg:last-child{width:9px}.landing-project-cue{font-size:7px;margin-top:5px;gap:3px}.landing-project-cue svg{width:8px;height:8px}}

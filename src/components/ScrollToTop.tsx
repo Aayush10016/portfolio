@@ -23,7 +23,7 @@ export default function ScrollToTop() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth"
     });
   };
 
@@ -37,12 +37,12 @@ export default function ScrollToTop() {
           onClick={scrollToTop}
           style={{
             position: "fixed",
-            bottom: "30px",
-            right: "30px",
-            zIndex: 9999,
+            bottom: "18px",
+            right: "18px",
+            zIndex: 90,
             width: "48px",
             height: "48px",
-            borderRadius: "50%",
+            borderRadius: "0",
             backgroundColor: "var(--navy)",
             border: "1px solid var(--gold)",
             color: "var(--gold)",
