@@ -50,11 +50,6 @@ const algorithmRounds = [
     answer: "Two Pointers",
     clue: "Two players move from opposite lanes, closing space until the target appears.",
     insight: "Some problems become simpler when pressure comes from both sides."
-  },
-  {
-    answer: "Sliding Window",
-    clue: "A moving frame keeps the useful streak and drops what no longer helps.",
-    insight: "Aayush likes windows because they turn brute force into rhythm."
   }
 ] as const;
 
@@ -67,8 +62,7 @@ const algorithmChoices = [
   "BFS",
   "DFS",
   "Binary Search",
-  "Two Pointers",
-  "Sliding Window"
+  "Two Pointers"
 ];
 
 const systemPuzzles = [
@@ -88,9 +82,9 @@ export default function MatchGames({ unlock }: { unlock: (id: AchievementId) => 
   const [tab, setTab] = useState<"algorithm" | "bug" | "system">("algorithm");
 
   return (
-    <section id="halftime" className="phase halftime">
+    <section id="halftime-games" className="phase halftime">
       <div className="phase-kicker">
-        <span>02 / THE TRAINING GROUND</span>
+        <span>THE TRAINING GROUND</span>
         <strong>HALFTIME</strong>
       </div>
       <div className="halftime-header">
@@ -146,7 +140,7 @@ function AlgorithmGame({ unlock }: { unlock: (id: AchievementId) => void }) {
   return (
     <motion.div className="game-panel" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}>
       <div className="game-copy">
-        <p className="eyebrow">Mini Game 1</p>
+        <p className="eyebrow">Read the algorithm</p>
         <h3>Guess The Algorithm</h3>
         <p>{active.clue}</p>
         <strong className="insight-line" role="status">{message}</strong>
@@ -206,11 +200,11 @@ function AlgorithmVisual({ name, round }: { name: string; round: number }) {
     );
   }
 
-  if (name === "Binary Search" || name === "Two Pointers" || name === "Sliding Window") {
+  if (name === "Binary Search" || name === "Two Pointers") {
     return (
       <div className="search-visual" aria-label={`${name} visualization`}>
         {bars.map((height, index) => {
-          const activeIndex = name === "Binary Search" ? index === 4 || index === 5 : name === "Two Pointers" ? index === 1 || index === 8 : index >= 3 && index <= 6;
+          const activeIndex = name === "Binary Search" ? index === 4 || index === 5 : index === 1 || index === 8;
           return (
             <motion.i
               key={`${round}-${name}-${index}`}
@@ -559,7 +553,7 @@ function BugHunt({ unlock }: { unlock: (id: AchievementId) => void }) {
   return (
     <motion.div className="game-panel bug-game" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}>
       <div className="game-copy">
-        <p className="eyebrow">Mini Game 2</p>
+        <p className="eyebrow">Spot the bug</p>
         <h3>Bug Hunt</h3>
         <p>{activeCategory.title}: {active.title}. Click the risky fragment. Hint: {active.hint}</p>
         <strong className="insight-line" role="status">
@@ -686,7 +680,7 @@ function SystemPuzzle({ unlock }: { unlock: (id: AchievementId) => void }) {
   return (
     <motion.div className={clsx("game-panel system-game", result)} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}>
       <div className="game-copy">
-        <p className="eyebrow">Mini Game 3</p>
+        <p className="eyebrow">Shape the system</p>
         <h3>System Design Puzzle</h3>
         <p>{activePuzzle.title}. Arrange the architecture like a build-up play: {activePuzzle.clue}</p>
         <strong className="insight-line" role="status">

@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, MotionConfig, useReducedMotion } from "framer-motion";
-import FlowField from "./FlowField";
+import ChapterAtmosphere from "./ChapterAtmosphere";
 
 type View = "landing" | "player" | "work" | "play" | "contact";
 type Entry = { path: string; url: string; label: string; phase: string; started: number };
@@ -33,12 +33,12 @@ export default function ExperienceShell({ children }: { children: React.ReactNod
   const navigate = useCallback((url: string) => {
     if(inFlight.current) return;
     const target = url.split("#")[0];
-    if(target === path){router.push(url);return;}
+    if(target === path){router.push(url,{scroll:false});return;}
     inFlight.current=true;
     setEntry({path:target,url,...destination(url),started:performance.now()});
     setSlow(false);
     // Begin loading immediately. The panel stays until the destination commits.
-    router.push(url);
+    router.push(url,{scroll:false});
   },[path,router]);
 
   useEffect(()=>{
@@ -49,9 +49,13 @@ export default function ExperienceShell({ children }: { children: React.ReactNod
   useEffect(()=>{
     if(!entry || path!==entry.path)return;
     // A short readable beat, with no artificial delay before navigation starts.
-    const remaining=Math.max(0,(reduced?0:520)-(performance.now()-entry.started));
+    const remaining=Math.max(0,(reduced?0:650)-(performance.now()-entry.started));
     const timer=setTimeout(()=>{finish();requestAnimationFrame(()=>{
-      const title=document.querySelector<HTMLElement>("main h1");
+      const hash=entry.url.split("#")[1]||"first-half";
+      const destination=document.getElementById(hash);
+      if(entry.path==="/"||hash==="first-half")window.scrollTo({top:0,behavior:"instant"});
+      else destination?.scrollIntoView({block:"start",behavior:"instant"});
+      const title=destination?.querySelector<HTMLElement>("h1,h2,h3")||document.querySelector<HTMLElement>("main h1");
       if(title){title.setAttribute("tabindex","-1");title.focus({preventScroll:true});}
     });},remaining+80);
     return()=>clearTimeout(timer);
@@ -60,12 +64,12 @@ export default function ExperienceShell({ children }: { children: React.ReactNod
   const moving=!!entry;
   return <Context.Provider value={{view,setView,navigate}}><MotionConfig reducedMotion="user">
     <div className={`experience-root ${moving ? "is-navigating" : ""}`} data-view={view}>
-      <FlowField view={view} transitioning={moving}/><div className="scene-shade" aria-hidden="true"/><div className="scene-grain" aria-hidden="true"/>
+      <ChapterAtmosphere scene={path === "/" ? "landing" : view}/><div className="scene-shade" aria-hidden="true"/><div className="scene-grain" aria-hidden="true"/>
       <motion.div key={path} className="route-content" inert={moving} aria-busy={moving} initial={{opacity:0,y:reduced?0:10}} animate={{opacity:1,y:0}} transition={{duration:reduced?0:.28}}>{children}</motion.div>
       <AnimatePresence>{entry&&<motion.div className="match-entry" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:reduced?0:.22}}>
         <div className="entry-curtain" aria-hidden="true"/><div className="entry-window" ref={focusTarget} tabIndex={-1} role="status" aria-live="polite" aria-label={`Opening ${entry.label}`}>
           <div className="entry-ticket-top"><span>EXTRA TIME</span><span>ADMIT ONE / AAYUSH TIWARI</span></div>
-          <div className="entry-ticket-body"><span className="entry-added-time" aria-hidden="true">+01<span>ONE MORE PLAY</span></span><div><p>{entry.phase}</p><h2>{entry.label}</h2><span className="entry-status">{slow?"Still loading the next page…":"Taking the field"}<i aria-hidden="true"/></span></div></div>
+          <div className="entry-ticket-body"><span className="entry-added-time" aria-hidden="true">AT<span>EXTRA TIME</span></span><div><p>{entry.phase}</p><h2>{entry.label}</h2><span className="entry-status">{slow?"Still loading the next page…":"Taking the field"}<i aria-hidden="true"/></span></div></div>
           <div className="entry-track" aria-hidden="true"><i/></div><div className="entry-ticket-bottom"><span>CODE · CULTURE · MATCHDAY</span><span>{slow?"THANK YOU FOR YOUR PATIENCE":"THE NEXT PLAY STARTS HERE"}</span></div>
           {slow&&<div className="entry-recovery"><a href={entry.url}>Open page directly ↗</a><button onClick={finish}>Dismiss</button></div>}
         </div>

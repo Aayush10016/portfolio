@@ -4,6 +4,10 @@ import "./experience.css";
 import "./landing.css";
 import "./content-motion.css";
 import "./typography.css";
+import "./matchday.css";
+import "./scroll-journey.css";
+import "./final-whistle.css";
+import "./mineral-scenes.css";
 import ExperienceShell from "@/components/ExperienceShell";
 
 const siteUrl = new URL("https://portfolio-aayush-tiwari.vercel.app");
@@ -59,6 +63,8 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <head>
+        <link rel="preload" href="/fonts/newsreader-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
+        <link rel="preload" href="/fonts/public-sans-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
         <link rel="preload" href="/fonts/fraunces-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
         <link rel="preload" href="/fonts/anybody-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
         <link rel="preload" href="/fonts/commissioner-variable.woff2" as="font" type="font/woff2" crossOrigin="anonymous"/>
